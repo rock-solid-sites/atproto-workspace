@@ -25,14 +25,16 @@
       "id": "atproto-thread-reader",
       "name": "ATProto Thread Reader",
       "purpose": "Read public Bluesky discussions and ATProto records through a reader service.",
-      "canonical_repository": null,
-      "visibility": "unresolved",
-      "default_branch": null,
+      "canonical_repository": "https://github.com/rock-solid-sites/rss-tools",
+      "visibility": "private",
+      "default_branch": "main",
       "verified_ref": null,
-      "source_authority": "source repository not identified in this bootstrap review",
-      "integration": "reference-only; do not import until canonical source and license are verified",
-      "status": "existing project/service referenced by the originating workspace; source mapping needed",
-      "notes": "Do not substitute an unrelated public thread-reader repository based on name similarity. Resolve the actual source repository and operator before adding a clone, submodule or vendored code."
+      "source_authority": "rss-tools repository; MCP connector record documents canonical source and live deployment",
+      "integration": "reference-only; no source import or redeployment authorized",
+      "status": "existing deployed Cloudflare Worker and connected read-only MCP; source/deployment drift documented",
+      "notes": "Canonical source resolved in rss-tools. As of 2026-10-26, live Worker POST /mcp (read_atproto v2.0.0) is absent from editable atproto-thread-reader/src/worker.js on main. Do not deploy that directory until source reconciliation and regression tests; recovered live bundle in mcp/atproto-reader/recovery is evidence, not authoritative editable source.",
+      "canonical_source_path": "atproto-thread-reader/",
+      "canonical_connector_record": "mcp/atproto-reader/connector-record.json"
     },
     {
       "id": "100percentaiart",
