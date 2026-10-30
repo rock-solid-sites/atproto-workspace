@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "updated": "2026-10-30",
+  "projects": [
+    {
+      "id": "atmosphere-free-stack",
+      "name": "Atmosphere Free Stack",
+      "purpose": "Research and planning for a portable, modular, low-cost ATProto PDS and publishing toolkit.",
+      "canonical_repository": "https://github.com/rock-solid-sites/atmosphere-free-stack",
+      "visibility": "private",
+      "default_branch": "main",
+      "verified_ref": "7616849e2b57ca197d565729788de779e3488281",
+      "source_authority": "upstream repository",
+      "integration": "reference-only",
+      "status": "design-research; not a deployed implementation",
+      "current_direction": "Evaluate pds.js first as the PDS engine; keep providers and publishing modules replaceable. Cloudflare is a practical target, not a required provider. Spaces remain disabled in the initial path.",
+      "canonical_documents": [
+        "https://github.com/rock-solid-sites/atmosphere-free-stack/blob/7616849e2b57ca197d565729788de779e3488281/README.md",
+        "https://github.com/rock-solid-sites/atmosphere-free-stack/blob/7616849e2b57ca197d565729788de779e3488281/docs/current-status.md",
+        "https://github.com/rock-solid-sites/atmosphere-free-stack/blob/7616849e2b57ca197d565729788de779e3488281/docs/architecture.md"
+      ],
+      "notes": "These current documents are planning references. They explicitly do not establish a production PDS, installer, complete recovery, or tested provider portability. Keep the private upstream canonical; review before publishing excerpts or source."
+    },
+    {
+      "id": "atproto-thread-reader",
+      "name": "ATProto Thread Reader",
+      "purpose": "Read public Bluesky discussions and ATProto records through a reader service.",
+      "canonical_repository": null,
+      "visibility": "unresolved",
+      "default_branch": null,
+      "verified_ref": null,
+      "source_authority": "source repository not identified in this bootstrap review",
+      "integration": "reference-only; do not import until canonical source and license are verified",
+      "status": "existing project/service referenced by the originating workspace; source mapping needed",
+      "notes": "Do not substitute an unrelated public thread-reader repository based on name similarity. Resolve the actual source repository and operator before adding a clone, submodule or vendored code."
+    },
+    {
+      "id": "100percentaiart",
+      "name": "100% AI Art",
+      "purpose": "Bluesky bot publishing public-domain artworks as AI-generated art.",
+      "canonical_repository": "https://github.com/rock-solid-sites/100percentaiart",
+      "visibility": "private",
+      "default_branch": "main",
+      "verified_ref": null,
+      "source_authority": "upstream repository",
+      "integration": "reference-only",
+      "status": "existing private project; no source migration authorized",
+      "notes": "Repository identity and private visibility were verified through the connected GitHub account. Resolve the current commit and review license/secrets before any import or publication."
+    }
+  ]
+}

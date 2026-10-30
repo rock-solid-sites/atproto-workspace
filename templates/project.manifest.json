@@ -1,0 +1,20 @@
+{
+  "schema_version": 1,
+  "id": "replace-with-stable-kebab-case-id",
+  "name": "Project name",
+  "purpose": "User need and intended outcome",
+  "canonical_repository": "https://github.com/owner/repository",
+  "visibility": "public | private | unresolved",
+  "default_branch": "main",
+  "verified_ref": "full-commit-sha-or-null",
+  "license": "SPDX identifier or unresolved",
+  "source_authority": "upstream repository",
+  "integration": "reference-only",
+  "status": "research | active | maintenance | archived",
+  "charter_review": {
+    "date": "YYYY-MM-DD",
+    "record": "path-or-url",
+    "unresolved_risks": []
+  },
+  "notes": "Provenance, source boundaries, and decision-changing caveats"
+}
