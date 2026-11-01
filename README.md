@@ -17,6 +17,8 @@ An umbrella workspace for research and development of independent ATProto tools.
 - `projects/README.md` — how project sources are added without taking ownership away from upstreams.
 - `docs/` — bootstrap and ASES-informed session handoff practice.
 - `templates/` — project manifest and session handoff templates.
+- [ASES / Rock Solid Sites adoption map](docs/METHODOLOGY-ADOPTION-2026-11-01.md) — **draft** cross-project practices and source statuses.
+- [Proposed ATProto engineering practices](docs/PROJECT-ENGINEERING-PRACTICES.md) and [project review template](templates/project-review.md) — optional review trial, not approved policy.
 - `packages/` — reserved for components intentionally built here or explicitly vendored.
 - `research/` — cross-project evidence and design decisions, each with provenance.
 
