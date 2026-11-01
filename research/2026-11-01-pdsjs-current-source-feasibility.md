@@ -1,0 +1,58 @@
+# pds.js feasibility and ATProto reference comparison — 2026-11-01
+
+**Status:** source/documentary reconnaissance PARTIAL; **one-account executable PDS smoke test BLOCKED / NOT RUN**. No change to deployment, credentials, production PDS, external repos or infrastructure.  
+**Question:** do the most recent available upstream sources support Atmosphere's initial modular, authenticated, non-Spaces PDS path without writing a new engine or provider adapter?  
+**Framework:** [Atmosphere methodology pilot](2026-11-01-atmosphere-methodology-pilot.md), [proposed engineering practices](../docs/PROJECT-ENGINEERING-PRACTICES.md).
+
+## Tooling and evidence limits
+
+- cgrmcp v1.6.0 accepts **only `github.com`** under its configured host allowlist. Direct `repo_open("https://tangled.org/chadtmiller.com/pds.js")` returned `unsupported_host` with `allowed_hosts: ["github.com"]`. Three guessed GitHub mirrors were tried but failed `git ls-remote`; **none is treated as canonical**.
+- Indexed **Cirrus** GitHub snapshot `cirrus-de476f57ba1f-7957dd`, commit `de476f57ba1fb936c6480a8fc278b6c7fc250cab`, 238/238 eligible parseable files, 238/391 tracked files; Markdown/configuration unsupported in graph (use `repo_read` where needed).
+- Indexed **Bluesky atproto** reference snapshot `atproto-34dbe242ce10-13549e`, commit `34dbe242ce104b824e195862f97c6a250b444d18`, 2540/2540 eligible parseable files, 2540/4234 tracked files. These snapshots are **comparators, not pds.js test runs**.
+- Direct canonical Tangled upstream repository and dated commit references consulted via public indexed pages. Access to current **exact HEAD and a full clone** was unavailable in this environment (the attempted `git ls-remote` failed DNS resolution for `tangled.org`). A pinned selected past commit does not prove current HEAD.
+- cgrmcp is read-only and does not install packages, launch Docker, or execute a PDS. A runtime pass cannot be inferred from an indexed source graph or from upstream's described tests.
+
+## Findings that change the architectural choice
+
+| ID | Observation, source | Consequence | Confidence and untested |
+| --- | --- | --- | --- |
+| F1 | [pds.js project readme](https://tangled.org/chadtmiller.com/pds.js) documents single-account PDS with `@pdsjs/core` and Node/Deno/Cloudflare adapters; OAuth PKCE/DPoP, records, blobs, sync, account migration, passkeys and app passwords. Project calls itself experimental. | Continue evaluating **existing pds.js first**; no custom PDS justified yet. | Upstream-documented, not independent conformance proof, commit HEAD not pinned. |
+| F2 | [pds.js upstream KV removal commit `22b2b59`](https://tangled.org/chadtmiller.com/pds.js/commit/22b2b59ac46d576839d9fe83f6a40eeb2f2e5f1a) removes Cloudflare shared KV adapter and `SHARED_KV` binding after moving account state to DO SQLite; it explicitly warns that upgrading from published 2.1.0 may reset auth state requiring reauthorization, new app passwords and passkeys. | **Retire September's KV-elimination question as implemented upstream for later versions**, replace it with a **versioned upgrade/migration and data-authority test**. No assumed transparent upgrade. | Concrete upstream commit statement; no exact deployed-version/state migration test. |
+| F3 | [pds.js architecture documentation](https://tangled.org/chadtmiller.com/pds.js/blob/bigmoves%2Fgit-ui-collaboration/docs/architecture.md) names `ActorStoragePort`, `SharedStoragePort`, `BlobPort`, `WebSocketPort` and optional `SpaceStoragePort` with platform-specific adapters. | A modular port boundary exists in upstream design; verify implementations/real-world parity before creating a new abstraction. | Upstream documentation from named branch, **not exact main source-read**. |
+| F4 | [pds.js current project readme](https://tangled.org/chadtmiller.com/pds.js) documents `pnpm install` due to `workspace:*`, `just dev` plus Docker/PLC/relay/Caddy for local fixtures; [Cloudflare browser setup](https://tangled.org/chadtmiller.com/pds.js/tree/bigmoves%2Fgit-ui-collaboration/packages/start) deploys a Worker and R2 bucket without a bespoke agent-built wizard. | Change any obsolete `npm install` and wizard-building assumption. Prefer upstream local fixture for smoke tests; no own wizard until a demonstrated gap. | Upstream documentation; wizard deployment and security not independently tested. |
+| F5 | Older [pds.js Cloudflare deployment snapshot](https://tangled.org/chadtmiller.com/pds.js/tree/885a7b265f8e4ef33f0505aff45dc3405853e9fe) states Workers **Paid** is required and lists KV setup. Official [Cloudflare Durable Objects pricing](https://developers.cloudflare.com/durable-objects/platform/pricing/) (2026-10-18 update) says SQLite-backed DOs are supported on Workers **Free**, with quotas and hard failure on exceeding free limits. | Treat older upstream deployment instructions as **version-sensitive/outdated**; a free-tier deployment is plausible. Confirm current R2/Worker/DO bindings and per-account entitlements before promoting `$0` claims. | Cloudflare policy documented; **not** proof this exact application has been tested or fits limits. |
+| F6 | [pds.js README](https://tangled.org/chadtmiller.com/pds.js) says single account only, does not implement `com.atproto.admin.*`, and lists migration and backup operations; also adds independent Git/site packages. | These constraints fit an initial single-user research slice. Optional publishing/Git functions should **not** expand v1 PDS kernel scope merely because upstream offers them. | Documented feature set, not verified endpoint behavior. |
+| F7 | Cirrus cgrmcp source: `packages/pds/src/account-do.ts:26-79` initializes `SqliteRepoStorage`, `AccountStore`, `SqliteOAuthStorage`, `Sequencer` and `RepoEngine` in one Account DO; `packages/spaces/src/space-do.ts` uses separate Space DO and `packages/spaces/src/index-do.ts` indexes Space states. `packages/pds/src/repo/blobs.ts:14-35,82-90` binds live blobs to R2 staging/public CID keys. | Cirrus remains a valuable **Cloudflare/isolation reference** but its direct DO/R2 APIs are not a platform-neutral PDS port. Spaces isolation research stays separate and disabled in v1. | **Direct cgrmcp source evidence** at pinned GitHub revision; no runtime test of Cirrus. |
+| F8 | Reference atproto cgrmcp source has `packages/pds/src/account-manager/account-manager.ts:536-553` session issuance/refresh persistence and `packages/pds/tests/import-repo.test.ts` CAR import tests. | Use official PDS implementation as independent **protocol and migration oracle**, but not as proof of pds.js compatibility. | **Direct cgrmcp source evidence** at pinned GitHub revision; no comparative test executed. |
+
+### Security and reliability gate changes
+
+- Upstream KV removal is *not* evidence that existing KV-backed PDS operators can upgrade losslessly. Treat auth-state continuity, account signing/DID control, passkeys, app-passwords, OAuth token state, blobs and repository state as separately verified categories.
+- The PDS's `PDS_ENABLE_SPACES` remains false in the initial path. Upstream statements that experimental Spaces are optional do not establish confidentiality or revocation guarantees.
+- `@pdsjs/core` port design separates concerns, but service portability requires cross-adapter tests and a full exit path (DID authority, blobs, non-PDS data, authentication/credentials). No complete restore or portability test has been run.
+- The historical `pds.js` JavaScript/JSDoc implementation requires boundary validation and verification; rewriting a maintained upstream implementation in another language by default would create additional interfaces and migration risk without an established gain.
+
+## Cheapest next executable test: one disposable, authenticated PDS
+
+**Prerequisite:** access to the actual Tangled repository, pinned full commit hash, a disposable environment with `pnpm`, `just`, Docker and working dependency access. Use current upstream quick-start, not stale `npm install` instructions.
+
+1. **Source gate:** at an exact commit, inspect `package.json`/lockfile, all core/adapter/package entry points, Cloudflare Wrangler bindings, license and `PDS_ENABLE_SPACES` default. Document that `SHARED_KV` is absent (or explain any reappearance), verify that `@pdsjs/core` imports no platform runtime, and list actual package and runtime dependencies. One negative source counterexample: an unintended cloud runtime import in core.
+2. **Local auth/repo gate:** run upstream's isolated `just dev` (local PLC and relay, no real accounts). Verify one mock account authenticates; unauthenticated write fails; authenticated write/read succeeds; wrong DID returns `RepoNotFound`; blob upload/retrieval matches bytes; `getRepo` returns a parseable CAR; `subscribeRepos` responds if required for initial v1; optional Spaces routes/scopes remain disabled.
+3. **Failure controls:** invalid credential and missing/expired auth denied; valid neighboring request passes. Restart local PDS and verify expected persisted state. Record exact commands, test IDs, env, versions and actual outputs; don't equate a test count with end-to-end conformance.
+4. **Further, distinct portability gate (not this smoke):** export actual CAR, fetch blobs, preserve identity authority and recover to a second **compatible** runtime/provider. Verify record CIDs and blobs after migration, reachability, and explicitly enumerate credentials / app state not preserved. Test old KV-backed state upgrade only in separate disposable fixtures, never against a live user.
+5. **Expense/authority gate:** no Cloudflare account changes or paid usage for the first smoke. Cloudflare Free eligibility and current R2 allowance must be checked before any real deployment, and paid spill must remain unauthorized.
+
+**Stop conditions:** unavailable repository/lockfile/dependencies, missing runtime prerequisites, ambiguous account credentials or unverified real-provider billing, or any test requiring production accounts. Report BLOCKED rather than replacing the intended experiment with live-identity testing.
+
+## Executed results versus planned results
+
+| Operation | Result |
+| --- | --- |
+| cgrmcp open `pds.js` on Tangled | **BLOCKED** `unsupported_host`, GitHub-only allowlist |
+| cgrmcp open likely unverified GitHub mirror paths | **BLOCKED** `git ls-remote` failed; no mirror assumed |
+| Public canonical pds.js documentation and dated commit inspection | **PARTIAL PASS**; version-dependent claims gathered; exact current HEAD not pinned |
+| cgrmcp source comparison: Cirrus and official atproto | **PASS** indexed immutable source snapshots and inspected implementation sites |
+| Direct clean `git ls-remote` of Tangled | **BLOCKED** environment DNS cannot resolve `tangled.org` |
+| Install, build, tests, one-account auth, repo/blobs and cross-runtime | **NOT RUN**; no PDS source checkout or execution environment available through cgrmcp |
+
+**Verdict:** pds.js remains the strongest **unverified** modular-first candidate based on the available architecture and dated upstream changes. The next engineering operation is not to author new adapters; it is to secure a pinned canonical source snapshot and perform the one-account local smoke, then compare exact requirements against failures. Do not interpret this report as a successful pds.js test or a production-readiness finding.
