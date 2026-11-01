@@ -36,7 +36,7 @@ Source readings used for this map:
 
 ## What is different for federated systems
 
-ATESES-style testing and Rock Solid Sites web quality are necessary but insufficient for protocol and public-interest claims. Review must identify **distinct roles**: identity/DID authority, PDS operator, AppView/indexer, client, relays, labelers, host/DNS/registrar, and any key or recovery custodian. A single successful request or unit test does not prove end-to-end behavior across those boundaries.
+ASES-style testing and Rock Solid Sites web quality are necessary but insufficient for protocol and public-interest claims. Review must identify **distinct roles**: identity/DID authority, PDS operator, AppView/indexer, client, relays, labelers, host/DNS/registrar, and any key or recovery custodian. A single successful request or unit test does not prove end-to-end behavior across those boundaries.
 
 Always ask who can retain a public record, which users can move identities/data, whether blobs and non-PDS state survive migration, what censorship/provider failure is actually recoverable, and whether permissions represent confidentiality. Public replication is not revocable deletion. Spaces access control is not automatically end-to-end encryption.
 
